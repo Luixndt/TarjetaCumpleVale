@@ -1,0 +1,1096 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#000000">
+  <meta name="description" content="Una sorpresa de cumpleaños muy especial para Vale.">
+  <title>Para Vale — Una celebración en Fontaine</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --night: #061b32;
+      --midnight: #0b304b;
+      --gold: #dfc184;
+      --gold-bright: #fff0bc;
+      --ivory: #fbf3df;
+      --cyan: #a1ecf4;
+      --font-title: 'Cinzel', Georgia, serif;
+      --font-body: 'DM Sans', Arial, sans-serif;
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; }
+    body {
+      background: #000;
+      color: var(--ivory);
+      font-family: var(--font-body);
+      overflow-x: hidden;
+      -webkit-tap-highlight-color: transparent;
+    }
+    button { font: inherit; }
+    button:focus-visible, [role="button"]:focus-visible {
+      outline: 2px solid var(--gold-bright);
+      outline-offset: 5px;
+    }
+    ::selection { color: #082137; background: var(--gold-bright); }
+
+    /* Fondo negro hasta descubrir la sorpresa; Fontaine aparece solo en la fiesta. */
+    .world {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      background: #000;
+    }
+    body:not(.party-mode) .water-light,
+    body:not(.party-mode) .vignette { display: none; }
+    /* Durante la fiesta el ÚNICO escenario es tu imagen real de Fontaine. */
+    body.party-mode .world {
+      inset: 0;
+      background: url('fontainepaisajefondo.jpg') center center / cover no-repeat;
+      animation: none;
+      transform: none;
+    }
+    /* Sin luces, anillos, velos ni adornos superpuestos al paisaje. */
+    body.party-mode .water-light,
+    body.party-mode .vignette,
+    body.party-mode .starlight { display: none; }
+    @keyframes worldBreath { from {transform: scale(1)} to {transform: scale(1.065)} }
+    .water-light {
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      background: radial-gradient(ellipse at 50% 14%, rgba(132,226,245,.16),transparent 48%),
+        radial-gradient(ellipse at 16% 88%,rgba(92,167,211,.16),transparent 37%);
+      mix-blend-mode: screen;
+    }
+    .vignette {
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      box-shadow: inset 0 0 130px 20px rgba(0,5,20,.35);
+    }
+    .starlight { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+    .starlight i {
+      position: absolute; display: block; width: var(--size); height: var(--size);
+      background: #e8ffff; border-radius: 50%; opacity: .6;
+      box-shadow: 0 0 9px 2px rgba(142,233,255,.45);
+      animation: twinkle var(--time) ease-in-out infinite alternate;
+      animation-delay: var(--delay);
+    }
+    @keyframes twinkle { to { opacity: .08; transform: scale(.35); } }
+
+    /* Globos que VIAJAN de abajo hacia arriba o de arriba hacia abajo. */
+    .balloon-layer { position: fixed; inset: 0; z-index: 8; overflow: hidden; pointer-events: none; opacity: .22; transition: opacity 1.4s ease; }
+    body.party-mode .balloon-layer { opacity: .93; }
+    .balloon-track {
+      position: absolute;
+      left: var(--left);
+      top: 0;
+      width: var(--width);
+      will-change: transform;
+      animation: travelUp var(--travel) linear infinite;
+      animation-delay: var(--delay);
+    }
+    .balloon-track.down { animation-name: travelDown; }
+    @keyframes travelUp {
+      0% {transform: translate3d(0, calc(100svh + 160px), 0)}
+      100% {transform: translate3d(var(--drift), -240px, 0)}
+    }
+    @keyframes travelDown {
+      0% {transform: translate3d(0, -240px, 0)}
+      100% {transform: translate3d(var(--drift), calc(100svh + 160px), 0)}
+    }
+    .balloon-sway { animation: sway var(--sway) ease-in-out infinite alternate; }
+    @keyframes sway { from {transform: translateX(-7px) rotate(-6deg)} to {transform: translateX(8px) rotate(6deg)} }
+    .balloon-body {
+      display: block; position: relative; width: 100%; aspect-ratio: .80;
+      border-radius: 49% 51% 46% 46% / 53% 54% 44% 45%;
+      background: radial-gradient(ellipse at 29% 22%,rgba(255,255,255,.75) 0%,rgba(255,255,255,.18) 17%, transparent 36%),
+        radial-gradient(ellipse at 80% 75%,rgba(2,19,34,.32),transparent 55%), var(--balloon-color);
+      box-shadow: inset -7px -11px 17px rgba(9,30,57,.28), inset 5px 4px 8px rgba(255,255,255,.17), 0 0 22px rgba(137,213,255,.15);
+    }
+    .balloon-body::before {
+      content: ''; position: absolute; left: 50%; bottom: -7px; transform: translateX(-50%);
+      width: 12px; height: 12px; background: var(--balloon-color);
+      clip-path: polygon(50% 0,0 100%,100% 100%);
+    }
+    .balloon-body::after {
+      content: ''; position: absolute; top: calc(100% + 5px); left: 50%; width: 1px;
+      height: var(--string,90px); background: rgba(238,228,199,.68);
+      transform: translateX(-50%) rotate(5deg); transform-origin: top;
+      box-shadow: 1px 0 rgba(3,18,30,.14);
+    }
+
+    .layout {
+      position: relative; z-index: 2;
+      width: 100%; min-height: 100svh;
+      display: flex; align-items: center; justify-content: center;
+      padding: clamp(16px,3vw,34px);
+    }
+    .is-hidden { display: none !important; }
+
+    /* Sobre de entrada: se abre antes de revelar la tarjeta original. */
+    .envelope-intro {
+      position: relative;
+      width: min(100%, 590px);
+      min-height: min(540px, 80svh);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      padding: 35px 10px;
+      text-align: center;
+      animation: cardAppear .9s ease both;
+    }
+    .envelope-intro::before {
+      content: ''; position: absolute; width: min(90vw, 520px); height: min(90vw, 520px);
+      border-radius: 50%; z-index: -1; pointer-events: none;
+      background: none;
+    }
+    .envelope-action {
+      position: relative; display: block;
+      width: min(100%, 440px);
+      aspect-ratio: 1.52;
+      background: none; padding: 0; border: 0;
+      cursor: pointer; perspective: 1000px; overflow: visible;
+      filter: drop-shadow(0 27px 26px rgba(0,7,20,.46));
+      -webkit-tap-highlight-color: transparent;
+    }
+    .envelope-shell {
+      position: absolute; inset: 0;
+      background: linear-gradient(145deg,#1b5068 0%,#10354f 46%,#08243c 100%);
+      border: 1px solid rgba(238,213,157,.8); border-radius: 5px;
+      box-shadow: inset 0 0 0 5px rgba(12,36,57,.6),inset 0 0 0 6px rgba(237,196,119,.26);
+    }
+    .envelope-paper {
+      position: absolute; z-index: 2;
+      left: 8%; top: 9%; width: 84%; height: 79%;
+      display: flex; align-items: center; justify-content: center; flex-direction: column;
+      background: linear-gradient(155deg,#fff7df,#e8d8b4);
+      color: #214258; border: 1px solid #e9d09e;
+      box-shadow: 0 0 0 5px rgba(255,251,238,.24) inset, 0 6px 24px rgba(3,16,32,.15);
+      transform: translateY(12%); opacity: 0;
+      transition: transform .9s cubic-bezier(.22,.75,.22,1) .22s, opacity .22s ease .12s;
+    }
+    .paper-ornament {
+      color: #b3905c; font-family: var(--font-title); font-size: 25px;
+      font-weight: 400; line-height: 1;
+    }
+    .paper-name {
+      font-family: var(--font-title); font-weight: 500;
+      font-size: clamp(23px,5.4vw,32px); letter-spacing: .05em;
+      margin-top: 11px;
+    }
+    .paper-rule { width: 78px; height: 1px; margin-top: 15px; background: #b3905c; opacity: .7; }
+    .envelope-front {
+      position: absolute; z-index: 3; inset: 0;
+      clip-path: polygon(0 27%,50% 63%,100% 27%,100% 100%,0 100%);
+      background: linear-gradient(155deg,#28627b,#153c57 58%,#0b2b46);
+      box-shadow: inset 0 -4px 8px rgba(0,5,20,.1);
+    }
+    .envelope-front::before, .envelope-front::after {
+      content: ''; position: absolute; inset: 0; pointer-events: none;
+    }
+    .envelope-front::before {
+      clip-path: polygon(0 28%,50% 64%,0 100%);
+      background: linear-gradient(130deg,#35708b,#1a4c68);
+    }
+    .envelope-front::after {
+      clip-path: polygon(100% 28%,50% 64%,100% 100%);
+      background: linear-gradient(230deg,#2c6581,#113c5d);
+    }
+    .envelope-flap {
+      position: absolute; z-index: 5; inset: -1px -1px auto;
+      height: 64%;
+      clip-path: polygon(0 0,100% 0,50% 100%);
+      background: linear-gradient(175deg,#39768e,#1a4a66 62%,#12354c);
+      border-top: 1px solid #f0d49c;
+      transform-origin: top center;
+      backface-visibility: hidden;
+      transition: transform .78s cubic-bezier(.25,.7,.15,1);
+    }
+    .envelope-seal {
+      position: absolute; z-index: 6; top: 54%; left: 50%;
+      width: 48px; height: 48px;
+      transform: translate(-50%,-50%) rotate(45deg);
+      border: 1px solid #f7dda4; border-radius: 8px;
+      background: linear-gradient(145deg,#f0dcac,#cda563);
+      display: grid; place-items: center;
+      box-shadow: 0 4px 15px rgba(2,13,28,.32),inset 0 0 0 4px rgba(247,230,187,.35);
+      transition: opacity .35s,transform .5s;
+    }
+    .envelope-seal::after {
+      content: ''; width: 17px; height: 17px; border: 2px solid #47617a;
+      transform: rotate(0); border-radius: 3px;
+    }
+    .envelope-prompt {
+      font-family: var(--font-title); font-size: clamp(15px,3.8vw,19px);
+      letter-spacing: .05em; color: #ffedc9;
+      margin-top: 36px; text-shadow: 0 2px 14px rgba(0,0,0,.4);
+      display: inline-block;
+      transform-origin: center center;
+      transition: opacity .35s;
+      animation: envelopePrompt 2.5s ease-in-out infinite;
+    }
+    @keyframes envelopePrompt {
+      0%, 100% { transform: scale(1); opacity: .88; }
+      50% { transform: scale(1.12); opacity: 1; }
+    }
+    .envelope-action:hover:not(:disabled) { filter: drop-shadow(0 28px 32px rgba(0,7,20,.55)) brightness(1.08); }
+    .envelope-intro.opening .envelope-flap { transform: rotateX(180deg); z-index: 1; }
+    .envelope-intro.opening .envelope-seal {opacity:0;transform:translate(-50%,-65%) rotate(45deg) scale(.4)}
+    .envelope-intro.opening .envelope-paper {transform:translateY(-41%);opacity:1}
+    .envelope-intro.opening .envelope-prompt {opacity:0;animation:none}
+    .envelope-intro.opening {animation: envelopeDisappear .42s ease 1s forwards}
+    @keyframes envelopeDisappear { to {opacity:0;transform:translateY(16px) scale(.98)} }
+
+    /* La carta se revela como una hoja de papelería fina dentro de su marco de Fontaine. */
+    .invitation {
+      position: relative; isolation: isolate;
+      width: min(100%, 610px);
+      min-height: 468px;
+      padding: clamp(43px,6.5vw,70px) clamp(32px,7vw,66px) clamp(37px,6vw,53px);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      text-align: center;
+      background: linear-gradient(145deg,#20506b 0%,#103851 33%,#092a42 100%);
+      border: 1px solid rgba(255,225,169,.86);
+      border-radius: 11px;
+      box-shadow: 0 32px 90px rgba(0,5,20,.62), 0 0 0 5px rgba(230,198,145,.13),
+        inset 0 1px 0 rgba(255,248,216,.52),inset 0 0 20px rgba(0,8,31,.25);
+      backdrop-filter: blur(17px);
+      -webkit-backdrop-filter: blur(17px);
+      animation: cardAppear 850ms cubic-bezier(.16,1,.3,1) both;
+    }
+    .letter-surface {
+      position: absolute; z-index: -1; inset: 13px;
+      border: 1px solid rgba(162,125,68,.48);
+      border-radius: 4px;
+      pointer-events: none;
+      background:
+        radial-gradient(ellipse at 50% 0%, rgba(255,255,255,.86),transparent 47%),
+        radial-gradient(ellipse at 0% 100%, rgba(189,148,94,.15),transparent 53%),
+        radial-gradient(ellipse at 100% 100%, rgba(176,139,95,.15),transparent 56%),
+        repeating-linear-gradient(0deg,transparent 0px, transparent 4px,rgba(125,95,55,.012) 5px,transparent 6px),
+        linear-gradient(140deg,#fff9e9 0%,#f5ecd7 48%,#ead8b8 100%);
+      box-shadow: inset 0 0 0 5px rgba(255,251,235,.52),
+        inset 0 0 0 6px rgba(177,135,72,.20), inset 0 0 32px rgba(186,144,85,.10),
+        0 5px 19px rgba(0,10,30,.14);
+    }
+    .letter-surface::before {
+      content: ''; position:absolute; inset: 13px;
+      border: 1px solid rgba(150,113,64,.26); border-radius: 2px;
+    }
+    .letter-surface::after {
+      content: '';position:absolute;left:50%;top:23px;transform:translateX(-50%);
+      width: 32%; max-width:150px; height:1px;
+      background: linear-gradient(90deg, transparent,rgba(175,133,73,.56),transparent);
+    }
+    .letter-scroll {
+      position: absolute; z-index: 0;
+      width: 76px;height:76px;pointer-events:none;
+      color:rgba(158,116,63,.48);
+    }
+    .letter-scroll.top-left {top:27px;left:26px}
+    .letter-scroll.top-right {top:27px;right:26px;transform:scaleX(-1)}
+    .letter-scroll.bottom-left {bottom:27px;left:26px;transform:scaleY(-1)}
+    .letter-scroll.bottom-right {bottom:27px;right:26px;transform:scale(-1)}
+    .invitation > .crest, .invitation > .resource-ornaments, .invitation > .story, .invitation > .flourish, .invitation > .primary-button {position:relative;z-index:1}
+    @keyframes cardAppear { from {opacity:0;transform:translateY(24px) scale(.97)} to {opacity:1;transform:none} }
+    .invitation::before, .invitation::after {
+      content: ''; position: absolute; inset: 6px; pointer-events: none;
+      border: 1px solid rgba(247,222,167,.30); border-radius: 7px;
+    }
+    .invitation::after { inset: 19px; border-color: rgba(146,109,62,.15); border-radius: 2px; }
+    .corner { position: absolute; width: 21px; height: 21px; z-index: 2; border-color: #d8b379; }
+    .corner.tl { top: 17px; left: 17px; border-top: 1px solid; border-left: 1px solid; }
+    .corner.tr { top: 17px; right: 17px; border-top: 1px solid; border-right: 1px solid; }
+    .corner.bl { bottom: 17px; left: 17px; border-bottom: 1px solid; border-left: 1px solid; }
+    .corner.br { bottom: 17px; right: 17px; border-bottom: 1px solid; border-right: 1px solid; }
+    .crest { width: 112px; height: 32px; margin-bottom: 12px; color: #aa7a42; filter:drop-shadow(0 1px 0 #fff9e0); }
+    /* Las tres recompensas de la portada son más grandes y bailan suavemente. */
+    .resource-ornaments {
+      display: flex; justify-content: center; align-items: center; gap: 25px;
+      margin: 9px 0 23px;
+      min-height: 64px;
+    }
+    .resource-ornaments img {
+      width: 48px; height: 48px; object-fit: contain;
+      filter: drop-shadow(0 4px 7px rgba(48,88,122,.23));
+      transform-origin: center bottom;
+      animation: jewelDance 2.4s ease-in-out infinite alternate;
+    }
+    .resource-ornaments img:nth-child(2) {
+      width: 62px; height: 62px;
+      animation-duration: 2.05s; animation-delay: -.85s;
+    }
+    .resource-ornaments img:nth-child(3) { width: 50px; height: 50px; animation-delay: -1.55s; animation-duration: 2.65s; }
+    @keyframes jewelDance {
+      0%   { transform: translateY(2px) rotate(-10deg) scale(.95) }
+      50%  { transform: translateY(-10px) rotate(8deg) scale(1.08) }
+      100% { transform: translateY(1px) rotate(-5deg) scale(1) }
+    }
+    .story { display: grid; place-items: center; min-height: 146px; width: 100%; max-width: 500px; }
+    .story h1 {
+      margin: 0;
+      font-family: var(--font-title);
+      font-size: clamp(27px,6.5vw,46px);
+      font-weight: 500;
+      line-height: 1.4;
+      letter-spacing: -.038em;
+      color: #1b4059;
+      text-shadow: 0 1px 0 rgba(255,255,255,.75);
+      text-wrap: balance;
+    }
+    .story h1 .name-highlight { display: block; font-size: 1.20em; color: #167998; text-shadow: 0 1px 0 rgba(255,255,255,.85); }
+    .story h1.is-changing { animation: storyOut 200ms ease both; }
+    .story h1.is-arriving { animation: storyIn 540ms cubic-bezier(.16,1,.3,1) both; }
+    @keyframes storyOut { to {opacity:0;transform:translateY(-8px)} }
+    @keyframes storyIn { from {opacity:0;transform:translateY(17px) scale(.975)} to {opacity:1;transform:none} }
+    .flourish { width: 120px; height: 26px; color: #a97d4d; margin: 10px auto 18px; }
+    /* Botón de avanzar más elegante: tipografía serif, bordes suaves y flecha propia. */
+    .primary-button {
+      position: relative; isolation: isolate; overflow: hidden;
+      display: inline-flex; align-items: center; justify-content: space-between; gap: 22px;
+      min-width: 196px; min-height: 54px; padding: 9px 11px 9px 29px;
+      border: 1px solid rgba(255,238,193,.95); border-radius: 999px;
+      color: #15334a;
+      background: linear-gradient(125deg,#fff3d3 0%,#efd5a2 55%,#dcb77c 100%);
+      font-family: var(--font-title); font-size: 14px; font-weight: 600;
+      letter-spacing: .025em; text-transform: none;
+      box-shadow: 0 10px 32px rgba(4,14,32,.26), inset 0 1px 0 rgba(255,255,255,.7);
+      cursor: pointer;
+      transition: transform .23s ease, box-shadow .23s ease, filter .23s ease;
+    }
+    .primary-button::before {
+      content: ''; position: absolute; top: -40%; bottom:-40%; left: -55%; width: 34%;
+      transform: skewX(-24deg); background: linear-gradient(90deg,transparent,#fff9,transparent);
+      animation: buttonGleam 5.2s ease-in-out infinite;
+      pointer-events: none;
+    }
+    @keyframes buttonGleam { 0%,75%{left:-55%} 100%{left:135%} }
+    .primary-button:hover {transform:translateY(-3px);box-shadow:0 14px 38px rgba(4,14,32,.38);filter:brightness(1.04)}
+    .primary-button:active {transform:translateY(1px) scale(.99)}
+    .button-label {position:relative;z-index:1;flex:1;text-align:center;white-space:nowrap}
+    .button-arrow {
+      flex:0 0 34px;width:34px;height:34px;
+      display:inline-flex;align-items:center;justify-content:center;
+      border-radius:50%; color:#f5e4bf;
+      background:#214967; border:1px solid rgba(11,36,61,.3);
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.16);
+      transition:transform .25s ease;
+    }
+    .primary-button:hover .button-arrow {transform:translateX(2px)}
+    .button-arrow svg {display:block;width:16px;height:16px}
+
+    /* Tinta azul y canto de oro del botón, sin cambiar su forma ni comportamiento. */
+    .invitation .primary-button {
+      color: #f9edcf;
+      border-color: rgba(228,193,135,.85);
+      background: linear-gradient(125deg,#205775 0%,#123d5b 60%,#0b2b46 100%);
+      box-shadow: 0 10px 26px rgba(25,63,79,.19),inset 0 1px 0 rgba(255,255,255,.22);
+    }
+    .invitation .button-arrow {
+      color: #153c55;
+      background: linear-gradient(135deg,#f6e6bc,#dfbd84);
+      border-color: rgba(244,217,166,.65);
+    }
+
+    /* Fiesta: el fondo que se ve detrás es fontainepaisajefondo.jpg. */
+    .party {
+      width: min(100%, 1130px);
+      min-height: calc(100svh - 40px);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      animation: partyArrive 1.1s cubic-bezier(.16,1,.3,1) both;
+    }
+    @keyframes partyArrive { from {opacity:0;transform:scale(.965) translateY(15px)} to {opacity:1;transform:none} }
+    .party-header { text-align: center; position: relative; width: 100%; z-index: 4; margin: 2px 0 17px; }
+    .party-header h2 {
+      margin: 8px auto 4px;
+      font-family: var(--font-title); font-size: clamp(30px,5.7vw,61px);
+      font-weight: 500; letter-spacing: -.04em; line-height: 1.2;
+      color: #fff8ed; text-shadow: 0 3px 17px rgba(0,0,0,.7);
+      text-wrap: balance;
+    }
+    .party-header h2 span { color: #a6f0ff; }
+    .party-header .flourish { margin: 1px auto 0; }
+    /* Escenario limpio: sin marco dorado, arcos, círculos ni fondo artificial.
+       El paisaje ya está pintado detrás por .world. */
+    .party-stage {
+      position: relative;
+      width: min(100%, 1040px);
+      height: clamp(525px, 70svh, 700px);
+      background: transparent;
+      overflow: visible;
+      isolation: isolate;
+    }
+    .cake-wrap {
+      position: absolute; z-index: 6; left: 50%; top: 59%;
+      width: clamp(210px, 31vw, 355px);
+      transform: translate(-50%,-50%);
+      cursor: pointer;
+      filter: drop-shadow(0 13px 14px rgba(0,0,0,.42));
+    }
+    .cake-wrap img {
+      display: block; width: 100%; height: auto; object-fit: contain;
+      animation: cakeHover 4.2s ease-in-out infinite;
+      transition: filter .25s;
+    }
+    .cake-wrap:hover img {filter:brightness(1.13)}
+    @keyframes cakeHover {50%{transform:translateY(-9px)}}
+    /* Nueve personajes más grandes, distribuidos alrededor del pastel. */
+    .character {
+      position: absolute; z-index: 4;
+      width: clamp(115px, 15vw, 180px);
+      transform: translate(-50%,-50%);
+      animation: dancerMove var(--tempo,1.5s) ease-in-out infinite alternate;
+      animation-delay: var(--delay,0s);
+      text-align: center;
+      pointer-events:none;
+    }
+    @keyframes dancerMove {to{transform:translate(-50%,-50%) translateY(-12px) rotate(3deg)}}
+    .character:nth-of-type(2n) {animation-name:dancerMoveOther}
+    @keyframes dancerMoveOther {to{transform:translate(-50%,-50%) translateY(-10px) rotate(-3deg)}}
+    .character video {
+      width: 100%; height: clamp(140px, 18vw, 205px);
+      display: block; object-fit: contain;
+      filter: drop-shadow(0 7px 10px rgba(0,0,0,.35));
+    }
+    .character-name { display: none; }
+    /* Tres arriba; dos a media altura; dos abajo; y dos cerca de la base. */
+    .c1 {left:24%; top:17%} .c2 {left:50%; top:15%} .c3 {left:76%; top:17%}
+    .c4 {left:21.5%; top:42%} .c5 {left:78.5%; top:42%}
+    .c6 {left:21.5%; top:69%} .c7 {left:78.5%; top:69%}
+    .c8 {left:22.5%; top:93%} .c9 {left:77.5%; top:93%}
+    /* Solo Kinich crece: conserva su lugar junto al pastel. */
+    .character.c8 { width: clamp(148px,19vw,230px); top: 90%; }
+    .character.c8 video { height: clamp(178px,23vw,264px); }
+    /* Las recompensas SALTAN de verdad: dos saltos pronunciados por ciclo.
+       El icono gira en una capa separada, sin pisar la animación de salto. */
+    .reward {
+      position:absolute; z-index:7;
+      display:grid; place-items:center;
+      width:clamp(38px,5.2vw,60px); height:clamp(38px,5.2vw,60px);
+      cursor:pointer;
+      transform-origin:50% 100%;
+      animation: rewardHop var(--reward-tempo,1.55s) linear infinite;
+      animation-delay:var(--reward-delay,0s);
+      will-change:transform;
+    }
+    .reward img {
+      width:100%;height:100%;display:block;object-fit:contain;
+      pointer-events:none;
+      filter:drop-shadow(0 6px 8px rgba(0,0,0,.43));
+      transform-origin:50% 78%;
+      animation: rewardTwist var(--reward-tempo,1.55s) ease-in-out infinite;
+      animation-delay:var(--reward-delay,0s);
+      will-change:transform;
+    }
+    .reward:hover img {filter:drop-shadow(0 7px 12px rgba(0,0,0,.40)) brightness(1.16)}
+    @keyframes rewardHop {
+      0%,100% {transform:translate3d(0,0,0) scale(1,.87)}
+      8% {transform:translate3d(-4px,-7px,0) scale(.95,1.09)}
+      22% {transform:translate3d(-9px,-43px,0) scale(1.10,1.12)}
+      38% {transform:translate3d(0,0,0) scale(1.12,.83)}
+      46% {transform:translate3d(2px,-5px,0) scale(.98,1.08)}
+      60% {transform:translate3d(9px,-37px,0) scale(1.08,1.10)}
+      77% {transform:translate3d(0,0,0) scale(1.10,.85)}
+      88% {transform:translate3d(-3px,-13px,0) scale(1.02,1.06)}
+    }
+    @keyframes rewardTwist {
+      0%,100% {transform:rotate(-17deg)}
+      22% {transform:rotate(15deg)}
+      38% {transform:rotate(-7deg)}
+      60% {transform:rotate(-19deg)}
+      77% {transform:rotate(12deg)}
+    }
+    .r1 {left:4%;top:53%;--reward-tempo:1.45s}
+    .r2 {right:4%;top:53%;--reward-delay:-.64s;--reward-tempo:1.72s}
+    .r3 {left:34%;top:7%;--reward-delay:-.38s;--reward-tempo:1.35s}
+    .r4 {left:35%;bottom:3%;--reward-delay:-1s;--reward-tempo:1.65s}
+    .r5 {right:35%;bottom:3%;--reward-delay:-.85s;--reward-tempo:1.5s}
+    .r6 {right:34%;top:7%;--reward-delay:-1.2s;--reward-tempo:1.62s}
+    .tap-spark {
+      position:fixed; z-index:30; pointer-events:none; width:9px;height:9px;
+      border:1px solid var(--gold-bright);background:rgba(195,242,255,.7);
+      box-shadow:0 0 19px #ddf9ff;
+      border-radius:50%;animation:tapSpark 850ms ease-out both;
+    }
+    @keyframes tapSpark {to{opacity:0;transform:translate(var(--sx),var(--sy)) scale(.18)}}
+    .reveal-flash {
+      position:fixed;z-index:40;inset:0;pointer-events:none;opacity:0;
+      background:radial-gradient(circle at 50% 48%,#f2ffff 0%,#a0ddf2 28%,rgba(15,58,90,.9) 65%,#071b32 100%);
+    }
+    .reveal-flash.active {animation:flashReveal 1.2s ease-in-out both}
+    @keyframes flashReveal {0%{opacity:0}32%{opacity:.93}70%{opacity:.72}100%{opacity:0}}
+
+
+    /* Confeti animado mediante canvas. No depende de CSS ni de servicios externos. */
+    #confettiLayer {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      display: block;
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+      pointer-events: none;
+      visibility: hidden;
+      opacity: 0;
+      transition: opacity .22s ease;
+    }
+    body.party-mode #confettiLayer { visibility: visible; opacity: 1; }
+
+    @media (max-width:700px) {
+      .layout {padding:12px 9px 20px}
+      .invitation {min-height: 435px; padding: 42px 34px 38px;}
+      .letter-surface {inset:10px}
+      .letter-surface::before {inset:10px}
+      .letter-scroll {width:50px;height:50px}
+      .letter-scroll.top-left {top:21px;left:20px}
+      .letter-scroll.top-right {top:21px;right:20px}
+      .letter-scroll.bottom-left {bottom:21px;left:20px}
+      .letter-scroll.bottom-right {bottom:21px;right:20px}
+      .crest {margin-bottom:10px}
+      .invitation .flourish {margin:9px auto 17px}
+      .resource-ornaments {gap:19px;margin:8px 0 23px}
+      .resource-ornaments img {width:43px;height:43px}
+      .resource-ornaments img:nth-child(2) {width:56px;height:56px}
+      .resource-ornaments img:nth-child(3) {width:45px;height:45px}
+      .story {min-height: 164px}
+      .story h1 {font-size:clamp(25px,7.7vw,42px);line-height:1.43}
+      .party {width:100%; min-height:100svh;justify-content:center}
+      .party-header {margin: 0 0 11px}
+      .party-header h2 {max-width:350px;font-size:clamp(29px,7.4vw,45px)}
+      .party-stage {height: min(77svh,690px);min-height:500px}
+      .cake-wrap {width:clamp(185px,55vw,240px);top:57%}
+      .character {width:clamp(89px,24vw,132px)}
+      .character video {height:clamp(122px,34vw,172px)}
+      .character.c8 {width:clamp(110px,32vw,166px);top:88%}
+      .character.c8 video {height:clamp(153px,44vw,206px)}
+      .envelope-intro {min-height:450px;padding:24px 6px}
+      .envelope-action {width:min(100%,370px)}
+      .envelope-prompt {margin-top:32px}
+      .primary-button {font-size:13px;min-height:52px}
+
+      .c1{left:23%;top:17%} .c2{left:50%;top:14%} .c3{left:77%;top:17%}
+      .c4{left:50px;top:39%} .c5{left:calc(100% - 50px);top:39%}
+      .c6{left:50px;top:67%} .c7{left:calc(100% - 50px);top:67%}
+      .c8{left:22%;top:94%} .c9{left:78%;top:94%}
+      .r1{left:2%;top:51%} .r2{right:2%;top:51%}
+      .r3{left:31%;top:26%} .r4{left:34%;bottom:7%}
+      .r5{right:34%;bottom:7%} .r6{right:31%;top:26%}
+      .reward{width:clamp(32px,8vw,45px);height:clamp(32px,8vw,45px)}
+      .balloon-layer{opacity:.14} body.party-mode .balloon-layer{opacity:.8}
+    }
+    @media(max-width:365px) {
+      .layout {padding:8px 5px 12px}
+      .invitation {padding:38px 30px 34px;min-height:415px}
+      .party-header h2 {font-size:29px}
+      .party-stage{height:min(75svh,650px);min-height:490px}
+      .cake-wrap{width:clamp(175px,54vw,205px)}
+      .character {width:clamp(82px,24vw,96px)}
+      .character video {height:118px}
+      .character.c8 {width:112px;top:87%}
+      .character.c8 video {height:151px}
+
+      .c4,.c6 {left:45px}
+      .c5,.c7 {left:calc(100% - 45px)}
+    }
+    @media(max-height:640px) and (min-width:701px) {
+      .party {min-height:100%;padding:20px 0}
+      .party-stage {height:500px}
+    }
+    @media(prefers-reduced-motion:reduce) {
+      *,*::before,*::after {animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+      .balloon-track {display:none}
+    }
+    /* La indicación del sobre pulsa de forma perceptible en cualquier configuración. */
+    .envelope-intro:not(.opening) .envelope-prompt {
+      animation: envelopePrompt 1.75s ease-in-out infinite !important;
+    }
+  </style>
+</head>
+<body>
+  <div class="world" aria-hidden="true"></div>
+  <div class="water-light" aria-hidden="true"></div>
+  <div class="vignette" aria-hidden="true"></div>
+  <div class="starlight" id="starlight" aria-hidden="true"></div>
+  <div class="balloon-layer" id="balloons" aria-hidden="true"></div>
+  <div class="reveal-flash" id="flash" aria-hidden="true"></div>
+  <canvas id="confettiLayer" aria-hidden="true"></canvas>
+
+  <main class="layout">
+    <section class="envelope-intro" id="envelopeIntro" aria-label="Sobre de cumpleaños para Vale">
+      <button class="envelope-action" id="openEnvelope" type="button" aria-label="Abrir la carta para Vale">
+        <span class="envelope-shell" aria-hidden="true"></span>
+        <span class="envelope-paper" aria-hidden="true">
+          <span class="paper-ornament">✧</span>
+          <span class="paper-name">Para Vale</span>
+          <span class="paper-rule"></span>
+        </span>
+        <span class="envelope-front" aria-hidden="true"></span>
+        <span class="envelope-flap" aria-hidden="true"></span>
+        <span class="envelope-seal" aria-hidden="true"></span>
+      </button>
+      <span class="envelope-prompt">Toca el sobre para abrir tu carta</span>
+    </section>
+
+    <section class="invitation is-hidden" id="invitation" aria-label="Mensaje para Vale">
+      <div class="letter-surface" aria-hidden="true"></div>
+      <svg class="letter-scroll top-left" viewBox="0 0 76 76" fill="none" aria-hidden="true">
+        <path d="M6 60V23C6 13 13 6 23 6H60M6 36C12 36 18 31 19 25C20 18 27 17 31 21C34 25 30 31 25 30C21 29 21 24 24 23M19 9C25 17 32 19 40 18C47 17 49 12 46 9M9 44C19 43 26 48 27 58M31 15C34 24 39 26 45 25" stroke="currentColor" stroke-width="1" stroke-linecap="round"/>
+        <path d="M17 34l3-3m16-14 2-4M12 51l-3 3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+      </svg>
+      <svg class="letter-scroll top-right" viewBox="0 0 76 76" fill="none" aria-hidden="true">
+        <path d="M6 60V23C6 13 13 6 23 6H60M6 36C12 36 18 31 19 25C20 18 27 17 31 21C34 25 30 31 25 30C21 29 21 24 24 23M19 9C25 17 32 19 40 18C47 17 49 12 46 9M9 44C19 43 26 48 27 58M31 15C34 24 39 26 45 25" stroke="currentColor" stroke-width="1" stroke-linecap="round"/>
+        <path d="M17 34l3-3m16-14 2-4M12 51l-3 3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+      </svg>
+      <svg class="letter-scroll bottom-left" viewBox="0 0 76 76" fill="none" aria-hidden="true">
+        <path d="M6 60V23C6 13 13 6 23 6H60M6 36C12 36 18 31 19 25C20 18 27 17 31 21C34 25 30 31 25 30C21 29 21 24 24 23M19 9C25 17 32 19 40 18C47 17 49 12 46 9M9 44C19 43 26 48 27 58M31 15C34 24 39 26 45 25" stroke="currentColor" stroke-width="1" stroke-linecap="round"/>
+        <path d="M17 34l3-3m16-14 2-4M12 51l-3 3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+      </svg>
+      <svg class="letter-scroll bottom-right" viewBox="0 0 76 76" fill="none" aria-hidden="true">
+        <path d="M6 60V23C6 13 13 6 23 6H60M6 36C12 36 18 31 19 25C20 18 27 17 31 21C34 25 30 31 25 30C21 29 21 24 24 23M19 9C25 17 32 19 40 18C47 17 49 12 46 9M9 44C19 43 26 48 27 58M31 15C34 24 39 26 45 25" stroke="currentColor" stroke-width="1" stroke-linecap="round"/>
+        <path d="M17 34l3-3m16-14 2-4M12 51l-3 3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+      </svg>
+      <span class="corner tl"></span><span class="corner tr"></span>
+      <span class="corner bl"></span><span class="corner br"></span>
+
+      <svg class="crest" viewBox="0 0 112 32" fill="none" aria-hidden="true">
+        <path d="M3 16h39m28 0h39M56 2l14 14-14 14-14-14L56 2Z" stroke="currentColor" stroke-width="1" opacity=".8"/>
+        <path d="M56 8l8 8-8 8-8-8 8-8Z" stroke="currentColor" opacity=".8"/>
+        <circle cx="56" cy="16" r="2.5" fill="currentColor"/>
+        <path d="M22 12l4 4-4 4m68-8-4 4 4 4" stroke="currentColor" opacity=".65"/>
+      </svg>
+
+      <div class="resource-ornaments" aria-hidden="true">
+        <img src="moras.webp" alt="">
+        <img src="protogema.webp" alt="">
+        <img src="jades.webp" alt="">
+      </div>
+
+      <div class="story" aria-live="polite" aria-atomic="true">
+        <h1 id="storyMessage">¡Feliz cumple, <span class="name-highlight">Valeeee!</span></h1>
+      </div>
+
+      <svg class="flourish" viewBox="0 0 120 26" fill="none" aria-hidden="true">
+        <path d="M2 13h42m32 0h42M60 2l11 11-11 11-11-11L60 2Z" stroke="currentColor" opacity=".85"/>
+        <circle cx="60" cy="13" r="3" fill="currentColor"/>
+      </svg>
+
+      <button class="primary-button" id="nextButton" type="button">
+        <span class="button-label">Siguiente</span>
+        <span class="button-arrow"><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8h12m-5-5 5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      </button>
+      <button class="primary-button is-hidden" id="surpriseButton" type="button">
+        <span class="button-label">Descubrir la sorpresa</span>
+        <span class="button-arrow"><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8h12m-5-5 5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      </button>
+    </section>
+
+    <section class="party is-hidden" id="party" aria-label="Fiesta de cumpleaños">
+      <header class="party-header">
+        <h2>¡Feliz cumpleaños, <span>Vale!</span></h2>
+      </header>
+
+      <div class="party-stage" id="partyStage">
+
+        <!-- Los nueve personajes se reproducen en bucle, sin su audio. -->
+        <div class="character c1" style="--tempo:1.38s;--delay:-.4s">
+          <video class="dancer-video" src="ash.webm" muted autoplay loop playsinline webkit-playsinline preload="metadata" aria-label="Ash bailando"></video>
+          <span class="character-name">Ash</span>
+        </div>
+        <div class="character c2" style="--tempo:1.55s;--delay:-.9s">
+          <video class="dancer-video" src="bakugo.webm" muted autoplay loop playsinline webkit-playsinline preload="metadata" aria-label="Bakugo bailando"></video>
+          <span class="character-name">Bakugo</span>
+        </div>
+        <div class="character c3" style="--tempo:1.41s;--delay:-.25s">
+          <video class="dancer-video" src="choso.webm" muted autoplay loop playsinline webkit-playsinline preload="metadata" aria-label="Choso bailando"></video>
+          <span class="character-name">Choso</span>
+        </div>
+        <div class="character c4" style="--tempo:1.69s;--delay:-1s">
+          <video class="dancer-video" src="fainon.webm" muted autoplay loop playsinline webkit-playsinline preload="metadata" aria-label="Fainon bailando"></video>
+          <span class="character-name">Fainon</span>
+        </div>
+        <div class="character c5" style="--tempo:1.52s;--delay:-.2s">
+          <video class="dancer-video" muted autoplay loop playsinline webkit-playsinline preload="metadata" aria-label="Flins bailando"><source src="flins.webm" type="video/webm"><source src="flins.mp4" type="video/mp4"></video>
+          <span class="character-name">Flins</span>
+        </div>
+        <div class="character c6" style="--tempo:1.48s;--delay:-.7s">
+          <video class="dancer-video" src="furina.webm" muted autoplay loop playsinline webkit-playsinline preload="metadata" aria-label="Furina bailando"></video>
+          <span class="character-name">Furina</span>
+        </div>
+        <div class="character c7" style="--tempo:1.60s;--delay:-1.3s">
+          <video class="dancer-video" src="himiko.webm" muted autoplay loop playsinline webkit-playsinline preload="metadata" aria-label="Himiko bailando"></video>
+          <span class="character-name">Himiko</span>
+        </div>
+        <div class="character c8" style="--tempo:1.57s;--delay:-.15s">
+          <video class="dancer-video" src="kinich1.webm" muted autoplay loop playsinline webkit-playsinline preload="metadata" aria-label="Kinich bailando"></video>
+          <span class="character-name">Kinich</span>
+        </div>
+        <div class="character c9" style="--tempo:1.33s;--delay:-.8s">
+          <video class="dancer-video" src="mitya.webm" muted autoplay loop playsinline webkit-playsinline preload="metadata" aria-label="Mitya bailando"></video>
+          <span class="character-name">Mitya</span>
+        </div>
+
+        <div class="cake-wrap" id="birthdayCake" role="button" tabindex="0" aria-label="Tocar el pastel para celebrar">
+          <img src="pastel fontaine.png" alt="Pastel de cumpleaños de Fontaine">
+        </div>
+
+        <div class="reward r1" tabindex="0" role="button" aria-label="Tocar protogema"><img src="protogema.webp" alt=""></div>
+        <div class="reward r2" tabindex="0" role="button" aria-label="Tocar jade"><img src="jades.webp" alt=""></div>
+        <div class="reward r3" tabindex="0" role="button" aria-label="Tocar moras"><img src="moras.webp" alt=""></div>
+        <div class="reward r4" tabindex="0" role="button" aria-label="Tocar protogema"><img src="protogema.webp" alt=""></div>
+        <div class="reward r5" tabindex="0" role="button" aria-label="Tocar jade"><img src="jades.webp" alt=""></div>
+        <div class="reward r6" tabindex="0" role="button" aria-label="Tocar moras"><img src="moras.webp" alt=""></div>
+      </div>
+    </section>
+  </main>
+
+  <!-- La canción se inicia al tocar el último botón «Siguiente». -->
+  <audio id="birthdayMusic" src="felizcumplea.mp3" preload="auto" loop></audio>
+
+  <!-- Confeti integrado: funciona sin internet y sin cargar bibliotecas externas. -->
+  <script>
+    // Canción confirmada en tu carpeta (ya está vinculada en el elemento <audio>).
+    const ARCHIVO_MUSICA = 'felizcumplea.mp3';
+
+    const $ = (selector) => document.querySelector(selector);
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const storyMessage = $('#storyMessage');
+    const nextButton = $('#nextButton');
+    const surpriseButton = $('#surpriseButton');
+    const birthdayMusic = $('#birthdayMusic');
+    const dancerVideos = [...document.querySelectorAll('.dancer-video')];
+
+    // Ayuda en la consola si abriste solamente el HTML sin copiar sus recursos.
+    document.querySelectorAll('img').forEach((img) => {
+      img.addEventListener('error', () => {
+        console.warn('No se encontró la imagen:', img.getAttribute('src'));
+        img.style.visibility = 'hidden'; // evita el ícono de imagen rota
+      });
+    });
+    dancerVideos.forEach((video) => {
+      video.addEventListener('error', () => {
+        console.warn('No se encontró o no se puede reproducir el video:', video.currentSrc || video.getAttribute('src'));
+      });
+    });
+    // Sobre interactivo: al abrirse, revela la misma tarjeta de mensajes de siempre.
+    const envelopeIntro = $('#envelopeIntro');
+    const openEnvelopeButton = $('#openEnvelope');
+    let envelopeOpened = false;
+    openEnvelopeButton.addEventListener('click', () => {
+      if (envelopeOpened) return;
+      envelopeOpened = true;
+      openEnvelopeButton.disabled = true;
+      envelopeIntro.classList.add('opening');
+      setTimeout(() => {
+        envelopeIntro.classList.add('is-hidden');
+        $('#invitation').classList.remove('is-hidden');
+        nextButton.focus({ preventScroll: true });
+      }, reduceMotion ? 0 : 1470);
+    });
+
+    let storyStep = 0;
+    let changingStep = false;
+    let partyStarted = false;
+
+    // Los mensajes de la carta, en su orden de aparición.
+    const storyTexts = [
+      '¡Feliz cumple, <span class="name-highlight">Valeeee!</span>',
+      'Espero sea un día alegre y lindo para ti.',
+      'Eres una personita especial para mí y estoy feliz de que cumplas un año más de vida.',
+      'Hay algunas personitas que quieren celebrar contigo...'
+    ];
+
+    nextButton.addEventListener('click', () => {
+      if (changingStep || storyStep >= storyTexts.length - 1) return;
+      changingStep = true;
+      // El ÚLTIMO «Siguiente» inicia la canción, antes de mostrar la sorpresa.
+      // Es importante llamar play() directamente dentro del clic para móviles.
+      if (storyStep === storyTexts.length - 2) startMusic();
+      storyMessage.classList.remove('is-arriving');
+      storyMessage.classList.add('is-changing');
+      setTimeout(() => {
+        storyStep += 1;
+        storyMessage.innerHTML = storyTexts[storyStep];
+        storyMessage.classList.remove('is-changing');
+        void storyMessage.offsetWidth; // reinicia la animación en cada paso
+        storyMessage.classList.add('is-arriving');
+        const lastStep = storyStep === storyTexts.length - 1;
+        nextButton.classList.toggle('is-hidden', lastStep);
+        surpriseButton.classList.toggle('is-hidden', !lastStep);
+        changingStep = false;
+      }, reduceMotion ? 0 : 205);
+    });
+
+    function startMusic() {
+      if (!ARCHIVO_MUSICA || !birthdayMusic.paused) return;
+      birthdayMusic.volume = 0.78;
+      birthdayMusic.loop = true;
+      birthdayMusic.play().catch((error) => {
+        console.warn('No se pudo reproducir felizcumplea.mp3:', error);
+      });
+    }
+
+    // Confeti que se MUEVE de verdad: física dibujada con requestAnimationFrame.
+    // No usa keyframes CSS, no necesita librerías y funciona abriendo index.html localmente.
+    // Incluso si el sistema usa "reducir movimiento", la fiesta solicitada sigue animada.
+    const confettiCanvas = $('#confettiLayer');
+    const confettiContext = confettiCanvas.getContext('2d', { alpha:true });
+    const confettiColors = ['#fff0ae','#e4b457','#6fe2fb','#9abaff','#ffffff','#f39bc9','#8ae8d7'];
+    const confettiRandom = (min,max) => Math.random()*(max-min)+min;
+    const confettiParticles = [];
+    let rainStarted = false;
+    let confettiWidth = 0, confettiHeight = 0;
+    let confettiLastFrame = 0, confettiSpawn = 0, confettiFrame = 0;
+    let confettiClock = 0;
+
+    function resizeConfetti() {
+      const ratio = Math.min(window.devicePixelRatio || 1, 2);
+      confettiWidth = window.innerWidth;
+      confettiHeight = window.innerHeight;
+      confettiCanvas.width = Math.round(confettiWidth * ratio);
+      confettiCanvas.height = Math.round(confettiHeight * ratio);
+      confettiContext.setTransform(ratio,0,0,ratio,0,0);
+    }
+    window.addEventListener('resize', resizeConfetti, { passive:true });
+
+    function newConfettiPiece(x,y,burst=false) {
+      return {
+        x, y, burst,
+        vx: confettiRandom(-17,17), vy: confettiRandom(65,135),
+        width: confettiRandom(5,10), height: confettiRandom(8,16),
+        angle: confettiRandom(0,Math.PI*2),
+        spin: confettiRandom(-6,6), flutter: confettiRandom(2.7,6.5),
+        sway: confettiRandom(8,25), phase: confettiRandom(0,Math.PI*2),
+        time: confettiRandom(0,5), age: 0, life: 5,
+        color: confettiColors[Math.floor(Math.random()*confettiColors.length)],
+        shape: Math.random() < .10 ? 'star' : (Math.random() < .15 ? 'circle' : 'paper')
+      };
+    }
+
+    function drawConfettiPiece(p) {
+      const ctx = confettiContext;
+      const visibility = p.burst ? Math.min(1,(p.life-p.age)*2) : Math.min(1,(confettiHeight+30-p.y)/35);
+      if (visibility <= 0) return;
+      ctx.save();
+      ctx.globalAlpha = Math.min(1, Math.max(0,visibility));
+      ctx.translate(p.x + Math.sin(p.time*2.2+p.phase)*p.sway, p.y);
+      ctx.rotate(p.angle);
+      ctx.fillStyle = p.color;
+      const flip = .22 + .78*Math.abs(Math.cos(p.time*p.flutter+p.phase));
+      if (p.shape === 'circle') {
+        ctx.beginPath();
+        ctx.ellipse(0,0,p.width*.55*flip,p.width*.55,0,0,Math.PI*2);
+        ctx.fill();
+      } else if (p.shape === 'star') {
+        const r = p.width*.85;
+        ctx.beginPath();
+        for (let i=0;i<10;i++) {
+          const a=-Math.PI/2+i*Math.PI/5;
+          const rad=i%2===0?r:r*.42;
+          const xx=Math.cos(a)*rad*flip, yy=Math.sin(a)*rad;
+          if (i===0) ctx.moveTo(xx,yy); else ctx.lineTo(xx,yy);
+        }
+        ctx.closePath(); ctx.fill();
+      } else {
+        ctx.fillRect(-p.width*flip/2,-p.height/2,p.width*flip,p.height);
+      }
+      ctx.restore();
+    }
+
+    function animateConfetti(timestamp) {
+      if (!rainStarted) return;
+      // Protección contra saltos enormes de tiempo al cambiar de pestaña.
+      const dt = confettiLastFrame ? Math.min((timestamp-confettiLastFrame)/1000,.045) : .016;
+      confettiLastFrame = timestamp;
+      confettiClock += dt;
+      confettiContext.clearRect(0,0,confettiWidth,confettiHeight);
+      // Lluvia constante, sin cargar la pantalla de demasiadas partículas en móviles.
+      const rate = confettiWidth <= 430 ? 15 : 22;
+      confettiSpawn += dt*rate;
+      while (confettiSpawn >= 1) {
+        confettiSpawn--;
+        confettiParticles.push(newConfettiPiece(confettiRandom(0,confettiWidth),-20));
+      }
+      for (let i=confettiParticles.length-1; i>=0; i--) {
+        const p=confettiParticles[i];
+        p.age+=dt;
+        p.time+=dt;
+        if (p.burst) {
+          p.vy+=350*dt; // gravedad: salen disparados y vuelven a caer
+          p.vx*=Math.pow(.99,dt*60);
+        }
+        p.x+=p.vx*dt;
+        p.y+=p.vy*dt;
+        p.angle+=p.spin*dt;
+        if ((p.burst && p.age>=p.life) || p.y>confettiHeight+40 || p.x < -100 || p.x>confettiWidth+100) {
+          confettiParticles.splice(i,1);
+        } else {
+          drawConfettiPiece(p);
+        }
+      }
+      // El número máximo evita ralentizaciones en teléfonos de gama baja.
+      const maxPieces=confettiWidth<=430?190:290;
+      if (confettiParticles.length>maxPieces) confettiParticles.splice(0,confettiParticles.length-maxPieces);
+      confettiFrame=requestAnimationFrame(animateConfetti);
+    }
+
+    function startConfettiRain() {
+      if (rainStarted) return;
+      rainStarted=true;
+      resizeConfetti();
+      // Desde el primer instante ya hay confeti en todas las alturas.
+      const amount=confettiWidth<=430?53:85;
+      for (let i=0;i<amount;i++) {
+        confettiParticles.push(newConfettiPiece(confettiRandom(0,confettiWidth),confettiRandom(-15,confettiHeight*.9)));
+      }
+      confettiLastFrame=0;
+      confettiFrame=requestAnimationFrame(animateConfetti);
+    }
+
+    function launchConfetti(x=.5,y=.48,amount=85,options={}) {
+      if (!rainStarted) startConfettiRain();
+      const count=Math.min(amount,confettiWidth<=430?70:110);
+      const centerAngle=options.angle??90;
+      const spread=options.spread??110;
+      const scale=Math.min(1.2,Math.max(.75,confettiWidth/430));
+      for (let i=0;i<count;i++) {
+        const p=newConfettiPiece(x*confettiWidth,y*confettiHeight,true);
+        const angle=(centerAngle+confettiRandom(-spread/2,spread/2))*Math.PI/180;
+        const speed=confettiRandom(190,490)*scale;
+        p.vx=Math.cos(angle)*speed;
+        p.vy=-Math.sin(angle)*speed;
+        p.sway=confettiRandom(3,13);
+        p.age=0;
+        p.life=confettiRandom(1.9,3.5);
+        p.time=0;
+        confettiParticles.push(p);
+      }
+    }
+
+    function localSparkles(x, y, amount = 9) {
+      if (reduceMotion) return;
+      for (let i = 0; i < amount; i++) {
+        const item = document.createElement('i');
+        const angle = Math.random() * Math.PI * 2;
+        const distance = 30 + Math.random() * 90;
+        item.className = 'tap-spark';
+        item.style.left = x + 'px';
+        item.style.top = y + 'px';
+        item.style.setProperty('--sx', Math.cos(angle) * distance + 'px');
+        item.style.setProperty('--sy', Math.sin(angle) * distance + 'px');
+        document.body.appendChild(item);
+        setTimeout(() => item.remove(), 950);
+      }
+    }
+
+    function bigCelebration() {
+      startConfettiRain();
+      // Dos cañones laterales y pequeñas ráfagas que llegan desde arriba.
+      // Los papelitos se ven desde el primer momento y la lluvia sigue luego.
+      launchConfetti(.08,.76,85,{angle:64,spread:82});
+      setTimeout(()=>launchConfetti(.92,.76,85,{angle:116,spread:82}),220);
+      setTimeout(()=>launchConfetti(.50,.45,70,{angle:90,spread:160}),750);
+      setTimeout(()=>launchConfetti(.26,.22,42,{angle:90,spread:150}),1450);
+      setTimeout(()=>launchConfetti(.74,.22,42,{angle:90,spread:150}),1810);
+    }
+
+    function startDancers() {
+      dancerVideos.forEach((video) => {
+        video.muted = true; // evita que cada personaje reproduzca su propio audio
+        video.defaultMuted = true;
+        video.loop = true;
+        video.playsInline = true;
+        video.autoplay = true;
+        video.play().catch(() => {
+          // Un WebM no compatible en Safari podría requerir una versión MP4.
+        });
+      });
+    }
+
+    surpriseButton.addEventListener('click', () => {
+      if (partyStarted) return;
+      partyStarted = true;
+
+      // Este clic descubre la fiesta; la canción ya empezó en el último «Siguiente».
+      $('#invitation').classList.add('is-hidden');
+      $('#party').classList.remove('is-hidden');
+      document.body.classList.add('party-mode');
+      startConfettiRain();
+      // Reinicia sus saltos al revelar el escenario y respeta sus desfases.
+      document.querySelectorAll('.reward').forEach(item=>{
+        item.style.animation='none';
+        void item.offsetWidth;
+        item.style.animation='';
+      });
+      startMusic();
+      startDancers();
+      $('#flash').classList.add('active');
+      bigCelebration();
+      setTimeout(() => $('#flash').classList.remove('active'), 1250);
+    });
+
+    function sparkleFrom(element, count = 16) {
+      const rect = element.getBoundingClientRect();
+      const x = rect.left + rect.width / 2;
+      const y = rect.top + rect.height / 2;
+      localSparkles(x,y,8);
+      launchConfetti(x / innerWidth,y / innerHeight,count);
+    }
+    function handleKeyboardAsClick(element) {
+      element.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          element.click();
+        }
+      });
+    }
+    const cake = $('#birthdayCake');
+    cake.addEventListener('click', bigCelebration);
+    handleKeyboardAsClick(cake);
+    document.querySelectorAll('.reward').forEach((item) => {
+      item.addEventListener('click', () => sparkleFrom(item,35));
+      handleKeyboardAsClick(item);
+    });
+
+    // Globos que atraviesan la pantalla a distintas velocidades y direcciones.
+    const balloonData = [
+      [2,40,'#9ed9e9','up',18,-7,-30],
+      [11,30,'#f1d59e','down',24,-12,34],
+      [21,26,'#bdc8eb','up',23,-18,45],
+      [32,34,'#a8e7d6','down',29,-5,-42],
+      [43,24,'#ebbed6','up',26,-14,30],
+      [55,41,'#c7def4','down',30,-22,-40],
+      [67,29,'#ecd49b','up',20,-10,38],
+      [76,35,'#b4c6eb','down',25,-8,-29],
+      [86,39,'#a6d6ed','up',19,-15,-43],
+      [94,28,'#e7bad2','down',22,-17,36],
+      [6,23,'#d0d7f4','up',29,-23,27],
+      [89,26,'#f3deb0','up',27,-4,-37]
+    ];
+    const balloonLayer = $('#balloons');
+    if (!reduceMotion) balloonData.forEach(([left,width,color,direction,duration,delay,drift],i) => {
+      const track = document.createElement('div');
+      track.className = 'balloon-track ' + (direction === 'down' ? 'down' : 'up');
+      track.style.cssText = `--left:${left}%;--width:${width}px;--balloon-color:${color};--travel:${duration}s;--delay:${delay}s;--drift:${drift}px;--sway:${2.5+(i%4)*.6}s;--string:${65+(i%4)*19}px`;
+      track.innerHTML = '<div class="balloon-sway"><span class="balloon-body"></span></div>';
+      balloonLayer.append(track);
+    });
+
+    // Estrellas suaves detrás de la invitación y de los globos.
+    const starLayer = $('#starlight');
+    if (!reduceMotion) for (let i = 0; i < 35; i++) {
+      const star = document.createElement('i');
+      star.style.cssText = `left:${(i*37.7)%100}%;top:${(i*23.9)%100}%;--size:${i%5===0?3:2}px;--time:${1.7+(i%6)*.53}s;--delay:${-(i%7)*.67}s`;
+      starLayer.append(star);
+    }
+
+    // Al regresar a la pestaña, reanudar los videos de la fiesta.
+    document.addEventListener('visibilitychange', () => {
+      if (!partyStarted) return;
+      if (document.hidden) {
+        dancerVideos.forEach(video => video.pause());
+      } else {
+        startDancers();
+      }
+    });
+  </script>
+</body>
+</html>
